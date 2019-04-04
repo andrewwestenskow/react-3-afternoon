@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import axios from 'axios'
+import { ToastContainer, toast } from 'react-toastify';
 
 import './App.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 import Header from './Header/Header';
 import Compose from './Compose/Compose';
@@ -66,6 +68,7 @@ class App extends Component {
       this.setState({
         posts: res.data
       })
+      toast.success('Post successfully submitted')
     })
     .catch(err => {
       console.log('err', err)
@@ -88,11 +91,15 @@ class App extends Component {
       })
     })
     .catch(err => {
+      toast.error('Enter search term', {
+        position: toast.POSITION.TOP_LEFT
+      })
       console.log('err', err)
     })
   }
 
   render() {
+    toast.configure()
     const { posts } = this.state;
     const showPosts = this.state.posts.map(post => {
       return <Post 
@@ -107,6 +114,7 @@ class App extends Component {
 
     return (
       <div className="App__parent">
+      <ToastContainer/>
         <Header searchText={this.searchText}/>
 
         <section className="App__content">
