@@ -22,7 +22,7 @@ export default class Header extends Component {
 
           {/* Displays the search bar */}
           <div className="Header__right">
-            <Search />
+            <Search searchText={this.props.searchText}/>
 
             {/* Displays the profile icon */}
             <div className="Header__profile">

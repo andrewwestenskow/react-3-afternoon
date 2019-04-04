@@ -21,7 +21,25 @@ export default class Compose extends Component {
   }
 
   createPost() {
+    let day = new Date();
+    let month = ''
+    let monthIndex = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    for(let i = 0; i<monthIndex.length; i++) {
+      if (day.getMonth() === i) {
+        month = monthIndex[i]
+      }
+    }
 
+    let body = {
+      text: this.state.text,
+      date: `${day.getDay()} ${month} ${day.getFullYear} `,
+      id: `${(this.props.posts[this.props.posts.length - 1].id) +1}`
+    }
+
+    this.props.createPost(body)
+    this.setState({
+      text: ''
+    })
   }
 
   render() {

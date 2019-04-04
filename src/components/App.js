@@ -1,16 +1,19 @@
 import React, { Component } from 'react';
+import axios from 'axios'
 
 import './App.css';
 
 import Header from './Header/Header';
 import Compose from './Compose/Compose';
+import Post from './Post/Post'
 
 class App extends Component {
   constructor() {
     super();
 
     this.state = {
-      posts: []
+      posts: [],
+      searchText: ''
     };
 
     this.updatePost = this.updatePost.bind( this );
@@ -19,31 +22,100 @@ class App extends Component {
   }
   
   componentDidMount() {
-
+    axios.get('https://practiceapi.devmountain.com/api/posts')
+    .then(res => {
+      let posts = res.data
+      this.setState({
+        posts: posts
+      })
+    })
+    .catch(err =>{
+      console.log('err', err)
+    })
   }
 
-  updatePost() {
-  
+  updatePost(id, text) {
+    console.log(text)
+    axios.put(`https://practiceapi.devmountain.com/api/posts?id=${id}`, {text})
+    .then(res => {
+      console.log(res)
+      this.setState({
+        posts: res.data
+      })
+    })
+    .catch(err => {
+      console.log('err', err, text, id)
+    })
   }
 
-  deletePost() {
-
+  deletePost(id) {
+    axios.delete(`https://practiceapi.devmountain.com/api/posts?id=${id}`)
+    .then(res => {
+      this.setState({
+        posts: res.data
+      })
+    })
+    .catch(err => {
+      console.log('err', err)
+    })
   }
 
-  createPost() {
+  createPost(body) {
+    axios.post(`https://practiceapi.devmountain.com/api/posts`, body)
+    .then(res => {
+      this.setState({
+        posts: res.data
+      })
+    })
+    .catch(err => {
+      console.log('err', err)
+    })
+  }
 
+  searchText = (text) => {
+    this.setState({
+      searchText: text
+    })
+    this.searchPosts(text)
+  }
+
+  searchPosts = (text) => {
+    let searchText = encodeURI(text)
+    axios.get(`https://practiceapi.devmountain.com/api/posts/filter?text=${searchText}`)
+    .then(res => {
+      this.setState({
+        posts: res.data
+      })
+    })
+    .catch(err => {
+      console.log('err', err)
+    })
   }
 
   render() {
     const { posts } = this.state;
+    const showPosts = this.state.posts.map(post => {
+      return <Post 
+      key={post.id} 
+      id={post.id}
+      text={post.text} 
+      date={post.date}
+      editPost={this.updatePost} 
+      deletePost={this.deletePost}
+       />
+    })
 
     return (
       <div className="App__parent">
-        <Header />
+        <Header searchText={this.searchText}/>
 
         <section className="App__content">
 
-          <Compose />
+          <Compose 
+          createPost={this.createPost}
+          posts={this.state.posts}/>
+          
+          {showPosts}
           
         </section>
       </div>
